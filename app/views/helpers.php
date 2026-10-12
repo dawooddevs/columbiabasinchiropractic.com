@@ -101,6 +101,14 @@ function brand_icon(string $class = 'mark', bool $allowWide = false): string
     return brand_mark($class);
 }
 
+/** Favicon only (Settings → Branding → Favicon), else the built-in mark. Used in the hero badge. */
+function favicon_icon(string $class = 'mark'): string
+{
+    $f = (string)setting('favicon', '');
+    if ($f !== '' && !Media::isMissing($f)) return img($f, '', ['class' => $class . ' mark--favicon', 'loading' => 'lazy']);
+    return brand_mark($class);
+}
+
 /**
  * Brand link (logo or wordmark) for the header ($dark = false) or dark surfaces ($dark = true:
  * footer, mobile menu). On dark surfaces the light logo is used; without one, the regular logo sits

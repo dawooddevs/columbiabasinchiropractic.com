@@ -49,7 +49,7 @@ $stats = json_list(setting('stats'));
         <?= site_pic('hero_image_2', 'Our Richland clinic', ['class' => 'hero__inset']) ?>
         <div class="spin-badge" aria-hidden="true">
           <svg class="ring" viewBox="0 0 132 132"><defs><path id="ring-path" d="M66 66 m-50 0 a50 50 0 1 1 100 0 a50 50 0 1 1 -100 0"/></defs><text><textPath href="#ring-path">Personalized care · Richland, WA · </textPath></text></svg>
-          <?= brand_icon('mark', true) ?>
+          <?= favicon_icon('mark') ?>
         </div>
         <?php if ($loc): ?>
         <div class="hero__card glass">
