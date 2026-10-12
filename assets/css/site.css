@@ -873,3 +873,8 @@ a.ccard:hover { transform: translateY(-4px); box-shadow: var(--shadow-sm); }
 .cat-block + .cat-block { margin-top: 40px; }
 .block:last-child { padding-bottom: 0; }
 .detail + .section, .detail + .section--tight { padding-top: clamp(28px, 3.4vw, 48px); }
+/* Detail pages: +30px above and below every section (after the tightening pass) */
+.detail { padding-top: calc(clamp(36px, 4vw, 56px) + 30px); padding-bottom: calc(clamp(16px, 2vw, 32px) + 30px); }
+.block { padding-bottom: calc(clamp(22px, 2.6vw, 34px) + 30px); margin-bottom: calc(clamp(22px, 2.6vw, 34px) + 30px); }
+.block:last-child { padding-bottom: 0; margin-bottom: 0; }
+.detail + .section, .detail + .section--tight { padding-top: calc(clamp(28px, 3.4vw, 48px) + 30px); }
