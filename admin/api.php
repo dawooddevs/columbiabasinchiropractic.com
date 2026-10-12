@@ -57,7 +57,7 @@ function resource(string $type): array
 if ($method === 'POST' && $route !== 'auth.login' && !Auth::checkCsrf($_SERVER['HTTP_X_CSRF_TOKEN'] ?? ($in['_csrf'] ?? null))) {
     fail('Security token expired. Please reload the page.', 419);
 }
-if ($method !== 'POST' && !in_array($route, ['auth.me', 'schema', 'dashboard', 'res.list', 'res.get', 'res.options', 'media.list', 'submissions.list', 'submissions.get', 'submissions.export', 'users.list', 'settings.get', 'activity.list', 'search', 'system.info', 'backup.export'], true)) {
+if ($method !== 'POST' && !in_array($route, ['auth.me', 'schema', 'dashboard', 'res.list', 'res.get', 'res.options', 'media.list', 'media.slots', 'submissions.list', 'submissions.get', 'submissions.export', 'users.list', 'settings.get', 'activity.list', 'search', 'system.info', 'backup.export'], true)) {
     fail('Method not allowed.', 405);
 }
 
@@ -430,6 +430,30 @@ try {
                 Auth::log('auto-assigned', 'media', null, plural($n, 'image', 'images'));
             }
             ok($res);
+
+        case 'media.slots':
+            // Every place on the site that shows an image, for Media Library → "Assign to…"
+            need('content.edit');
+            ok(['groups' => SiteImages::all(Auth::can('settings.manage'))]);
+
+        case 'media.assign':
+            // Put one media file into one image slot (a setting, or a service/provider/page/location image)
+            need('content.edit');
+            $row = DB::one('SELECT * FROM media WHERE id = ?', [(int)($in['id'] ?? 0)]);
+            if (!$row) fail('File not found.', 404);
+            if ($row['kind'] !== 'image') fail('Only images can be assigned to image slots.', 422);
+            $slots = array_values(array_filter(array_map('strval', (array)($in['slots'] ?? [$in['slot'] ?? '']))));
+            if (!$slots) fail('Choose where to use this image.', 422);
+            $labels = [];
+            try {
+                foreach ($slots as $slot) {
+                    $labels[] = SiteImages::assign($slot, (string)$row['path'], Auth::can('settings.manage'));
+                }
+            } catch (RuntimeException $e) {
+                fail($e->getMessage(), 422);
+            }
+            Auth::log('assigned', 'media', (int)$row['id'], $row['original_name'] . ' → ' . implode(', ', $labels));
+            ok(['assigned' => $labels, 'groups' => SiteImages::all(Auth::can('settings.manage'))]);
 
         case 'media.replace':
             // Swap the file behind a media item; every page/setting using it is re-pointed to the new file

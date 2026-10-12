@@ -34,6 +34,8 @@ require APP . '/lib/Html.php';
 require APP . '/lib/Media.php';
 require APP . '/lib/Content.php';
 require APP . '/lib/Seo.php';
+require APP . '/lib/SiteImages.php';
+require APP . '/views/helpers.php'; // frontend template helpers
 
 date_default_timezone_set('America/Los_Angeles'); // Pacific time (Columbia Basin, WA). Change if the practice is elsewhere.
 mb_internal_encoding('UTF-8');

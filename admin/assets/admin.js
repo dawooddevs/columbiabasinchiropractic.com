@@ -222,6 +222,7 @@
       busy(btn, true);
       api('auth.login', { login: form.login.value, password: form.password.value }).then(function (d) {
         S.user = d.user; S.csrf = d.csrf;
+        editorFlag(true);
         return boot();
       }).catch(function (e2) {
         busy(btn, false);
@@ -303,7 +304,7 @@
     $('a', m).addEventListener('click', function () { m.remove(); });
     $('[data-logout]', m).addEventListener('click', function () {
       m.remove();
-      api('auth.logout', {}).then(function () { S.user = null; location.hash = ''; renderLogin(); toast('Signed out.'); });
+      api('auth.logout', {}).then(function () { S.user = null; editorFlag(false); location.hash = ''; renderLogin(); toast('Signed out.'); });
     });
   }
 
@@ -1099,21 +1100,39 @@
 
   function viewMedia(view) {
     document.title = 'Media Library · ' + A.siteName;
-    view.innerHTML = header('Media Library', 'All images, PDFs and documents used on the website. Shift/Ctrl-click to select several.', can('content.edit') ? '<button class="btn btn--primary" data-autoassign>' + ic('sparkles') + 'Auto-assign images</button>' : '') + '<div class="media-layout"><div data-browser></div><div class="mdetail" data-detail></div></div>';
+    // #/media?slot=setting:hero_image&label=… comes from an "Assign image" chip on the public site
+    var q = new URLSearchParams((location.hash.split('?')[1]) || '');
+    var target = q.get('slot') && can('content.edit') ? { id: q.get('slot'), label: q.get('label') || 'this image slot' } : null;
+    view.innerHTML = header('Media Library', 'All images, PDFs and documents used on the website. Shift/Ctrl-click to select several.', can('content.edit') ? '<button class="btn btn--primary" data-autoassign>' + ic('sparkles') + 'Auto-assign images</button>' : '') +
+      (target ? '<div class="notice notice--blue" style="margin-bottom:16px">' + ic('image') + '<span>Choose an image for <b>' + esc(target.label) + '</b>: select or upload a file, then click <b>Use here</b>.</span></div>' : '') +
+      '<div class="media-layout"><div data-browser></div><div class="mdetail" data-detail></div></div>';
     var aa = $('[data-autoassign]', view);
     if (aa) aa.addEventListener('click', autoAssign);
     var detail = $('[data-detail]', view);
     function showDetail(m) {
       if (!m) { detail.innerHTML = '<div class="card"><div class="empty-s">' + ic('image') + 'Select a file to see its details.</div></div>'; return; }
+      var assignBtns = m.kind === 'image' && can('content.edit') ? '<div class="f" style="display:grid;gap:8px">' +
+        (target ? '<button class="btn btn--accent btn--block" data-use>' + ic('check') + 'Use here: ' + esc(target.label) + '</button>' : '') +
+        '<button class="btn btn--primary btn--block" data-assign>' + ic('image') + 'Assign to…</button><p class="f__help">Put this image anywhere on the website: homepage sections, services, conditions, team photos, pages.</p></div>' : '';
       detail.innerHTML = '<div class="card"><div class="mdetail__preview">' + (m.kind === 'image' ? '<img src="' + esc(m.url) + '" alt="">' : ic(m.kind === 'video' ? 'video' : 'file-text')) + '</div><div class="card__b" style="display:grid;gap:14px">' +
         '<div><strong style="color:var(--ink);word-break:break-all">' + esc(m.original_name) + '</strong></div>' +
         '<div class="kv"><div><span>Type</span><strong>' + esc(m.mime) + '</strong></div><div><span>Size</span><strong>' + bytes(m.size) + '</strong></div>' + (m.width ? '<div><span>Dimensions</span><strong>' + m.width + ' × ' + m.height + '</strong></div>' : '') + '<div><span>WebP version</span><strong>' + (m.webp ? 'Yes' : '—') + '</strong></div><div><span>Uploaded</span><strong>' + fullDate(m.created_at) + '</strong></div></div>' +
         '<div class="f"><label>File URL</label><div class="prefix"><input readonly value="' + esc(m.abs_url) + '"><button class="btn btn--plain btn--sm" data-copy style="border-radius:0">' + ic('copy') + '</button></div></div>' +
         '<div class="f"><label>Title</label><input class="in" data-title value="' + esc(m.title) + '"></div>' +
+        assignBtns +
         (m.kind === 'image' ? '<div class="f"><label>Alt text</label><textarea class="in" rows="2" data-alt>' + esc(m.alt) + '</textarea><p class="f__help">Describe the image for accessibility and SEO.</p></div>' : '') +
         '<div class="pub__row">' + (can('media.upload') ? '<button class="btn btn--primary" data-msave>' + ic('check') + 'Save</button>' : '') + '<a class="btn btn--ghost" href="' + esc(m.url) + '" target="_blank" rel="noopener">' + ic('external') + 'Open</a>' + (can('media.delete') || m.uploaded_by === S.user.id ? '<button class="btn btn--danger btn--icon" data-mdel1 title="Delete">' + ic('trash') + '</button>' : '') + '</div>' +
         (can('media.upload') && (can('media.delete') || m.uploaded_by === S.user.id) ? '<div class="f"><label class="btn btn--ghost btn--block" data-mreplace>' + ic('upload') + '<span data-mreplace-label>Replace file…</span><input type="file" hidden></label><p class="f__help">Upload a new version. Every page using this file switches to the new one automatically.</p></div>' : '') +
         '</div></div>';
+      var asg = $('[data-assign]', detail);
+      if (asg) asg.addEventListener('click', function () { assignTo(m); });
+      var use = $('[data-use]', detail);
+      if (use) use.addEventListener('click', function () {
+        busy(use, true);
+        api('media.assign', { id: m.id, slots: [target.id] }).then(function () {
+          busy(use, false); toast('Image set: ' + target.label + '.');
+        }).catch(function (e) { busy(use, false); toast(e.message, 'err'); });
+      });
       $('[data-copy]', detail).addEventListener('click', function () { navigator.clipboard && navigator.clipboard.writeText(m.abs_url).then(function () { toast('URL copied.'); }); });
       var sv = $('[data-msave]', detail);
       if (sv) sv.addEventListener('click', function () {
@@ -1143,6 +1162,44 @@
     }
     var browser = mediaBrowser($('[data-browser]', view), { onSelect: showDetail, onUploaded: function (m) { showDetail(m); } });
     showDetail(null);
+  }
+
+  /* Media Library → "Assign to…": put one image into any image slot on the site */
+  function assignTo(m) {
+    var chosen = {};
+    var body = el('<div><div style="display:flex;gap:14px;align-items:center;margin-bottom:14px"><img src="' + esc(m.thumb_url || m.url) + '" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:12px"><div><strong style="color:var(--ink);word-break:break-all">' + esc(m.original_name) + '</strong><p class="muted" style="margin:2px 0 0">Tick every place this image should appear.</p></div></div>' +
+      '<input class="in" type="search" placeholder="Search slots… (e.g. hero, sciatica, Dr. Kurtz)" data-q style="margin-bottom:12px"><div data-slots><div class="skel"></div></div></div>');
+    var list = $('[data-slots]', body), qin = $('[data-q]', body), groups = [];
+    function render() {
+      var q = qin.value.trim().toLowerCase();
+      var html = groups.map(function (g) {
+        var items = g.items.filter(function (it) { return !q || (it.label + ' ' + it.hint + ' ' + g.label).toLowerCase().indexOf(q) !== -1; });
+        if (!items.length) return '';
+        return '<p class="muted" style="margin:14px 0 6px;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700">' + esc(g.label) + '</p><div class="card"><ul class="list">' + items.map(function (it) {
+          return '<li><label style="display:flex;align-items:center;gap:12px;width:100%;cursor:pointer"><input type="checkbox" data-slot="' + esc(it.id) + '"' + (chosen[it.id] ? ' checked' : '') + '>' +
+            (it.current ? '<img class="tbl-thumb" src="' + esc(it.current) + '" alt="">' : '<span class="tbl-thumb" style="display:grid;place-items:center;color:var(--faint)">' + ic('image') + '</span>') +
+            '<span class="list__main"><strong>' + esc(it.label) + '</strong><small>' + esc(it.hint) + (it.current ? '' : ' · empty') + '</small></span></label></li>';
+        }).join('') + '</ul></div>';
+      }).join('');
+      list.innerHTML = html || '<div class="empty-s">No matching image slots.</div>';
+      $$('[data-slot]', list).forEach(function (cb) { cb.addEventListener('change', function () { if (cb.checked) chosen[cb.dataset.slot] = 1; else delete chosen[cb.dataset.slot]; }); });
+    }
+    qin.addEventListener('input', render);
+    get('media.slots').then(function (d) { groups = d.groups; render(); }).catch(function (e) { list.innerHTML = '<div class="empty-s">' + esc(e.message) + '</div>'; });
+    modal({
+      title: 'Assign image', body: body, size: 'md',
+      buttons: [{ label: 'Close', value: null }, {
+        label: 'Assign', cls: 'btn--primary', icon: 'check', onClick: function (close, btn) {
+          var slots = Object.keys(chosen);
+          if (!slots.length) { toast('Tick at least one place for this image.', 'err'); return; }
+          busy(btn, true);
+          api('media.assign', { id: m.id, slots: slots }).then(function (d) {
+            busy(btn, false); chosen = {}; groups = d.groups; render();
+            toast('Assigned to ' + d.assigned.length + ' place' + (d.assigned.length === 1 ? '' : 's') + ': ' + d.assigned.join(', ') + '.');
+          }).catch(function (e) { busy(btn, false); toast(e.message, 'err'); });
+        }
+      }]
+    });
   }
 
   /* Match uploaded images to treatments/pages/settings by file name */
@@ -1424,8 +1481,11 @@
       if (!keepView) setInterval(refreshBadge, 60000);
     });
   }
+  // Lets the public site show "Assign image" chips to signed-in editors (site.js re-checks auth.me)
+  function editorFlag(on) { try { if (on) localStorage.setItem('site_editor', '1'); else localStorage.removeItem('site_editor'); } catch (e) {} }
   get('auth.me').then(function (d) {
     S.csrf = d.csrf;
+    editorFlag(!!d.user);
     if (!d.user) return renderLogin();
     S.user = d.user;
     return boot();

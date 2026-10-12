@@ -30,7 +30,7 @@ final class Resources
 
         return [
             'services' => [
-                'table' => 'services', 'label' => 'Treatments', 'singular' => 'Treatment', 'icon' => 'activity',
+                'table' => 'services', 'label' => 'Services & Conditions', 'singular' => 'Service', 'icon' => 'activity',
                 'titleKey' => 'title', 'slug' => true, 'url' => Content::SERVICE_BASE . '/{slug}/', 'orderable' => true, 'review' => true,
                 'search' => ['title', 'slug', 'excerpt'],
                 'columns' => [
@@ -127,6 +127,9 @@ final class Resources
                         ['value' => 'treatments', 'label' => 'Services index'],
                         ['value' => 'appointment', 'label' => 'Appointment'], ['value' => 'contact', 'label' => 'Contact'],
                         ['value' => 'sitemap', 'label' => 'Sitemap'],
+                        ['value' => 'conditions', 'label' => 'Conditions index'], ['value' => 'about', 'label' => 'About / team'],
+                        ['value' => 'faq', 'label' => 'FAQ page'], ['value' => 'videos', 'label' => 'Videos'],
+                        ['value' => 'testimonials', 'label' => 'Testimonials'],
                     ]],
                     ['key' => 'image', 'label' => 'Hero image', 'type' => 'image', 'side' => true],
                     ['key' => 'show_cta', 'label' => 'Show appointment CTA', 'type' => 'toggle', 'side' => true, 'default' => 1],
@@ -264,6 +267,9 @@ final class Resources
                 ['key' => 'sms_phone', 'label' => 'Text / SMS number', 'type' => 'text', 'half' => true],
                 ['key' => 'email', 'label' => 'Public email (optional)', 'type' => 'text', 'half' => true],
                 ['key' => 'notify_email', 'label' => 'Form notification email', 'type' => 'text', 'half' => true, 'help' => 'New form submissions are emailed here.'],
+                ['key' => 'booking_url', 'label' => 'Online booking link (Jane)', 'type' => 'text', 'help' => 'Every "Book online" button opens this link. Leave empty to use the built-in appointment request form.'],
+                ['key' => 'portal_url', 'label' => 'Patient portal link', 'type' => 'text', 'half' => true],
+                ['key' => 'financing_url', 'label' => 'Financing link (Affirm)', 'type' => 'text', 'half' => true, 'help' => 'Shown on spinal decompression and disc pages.'],
                 ['key' => 'communities', 'label' => 'Communities served (comma separated)', 'type' => 'text'],
                 ['key' => 'founded_year', 'label' => 'Founded (year)', 'type' => 'text', 'half' => true],
                 ['key' => 'cookie_notice', 'label' => 'Show cookie notice', 'type' => 'toggle'],
@@ -280,10 +286,12 @@ final class Resources
                 ['key' => 'hero_line1', 'label' => 'Headline — line 1', 'type' => 'text', 'half' => true],
                 ['key' => 'hero_line2', 'label' => 'Headline — line 2 (accent)', 'type' => 'text', 'half' => true],
                 ['key' => 'hero_copy', 'label' => 'Hero supporting copy', 'type' => 'textarea', 'rows' => 3],
+                ['key' => 'hero_eyebrow', 'label' => 'Hero eyebrow', 'type' => 'text', 'half' => true],
                 ['key' => 'hero_badges', 'label' => 'Trust indicators', 'type' => 'lines', 'help' => 'One per line.'],
-                ['key' => 'hero_image', 'label' => 'Hero photo', 'type' => 'image', 'help' => 'Media → Auto-assign uses a file named home-hero.'],
-                ['key' => 'about_image', 'label' => 'About section photo', 'type' => 'image', 'help' => 'Media → Auto-assign uses a file named home-about.'],
-                ['key' => 'testimonials_image', 'label' => 'Testimonials section photo', 'type' => 'image', 'help' => 'Shown beside patient testimonials on the homepage. Media → Auto-assign uses a file named home-testimonials.'],
+                ['key' => 'about_heading', 'label' => '"Care built around you" heading', 'type' => 'text'],
+                ['key' => 'about_copy', 'label' => '"Care built around you" copy', 'type' => 'textarea', 'rows' => 3],
+                ['key' => 'purpose_heading', 'label' => 'Purpose heading', 'type' => 'text'],
+                ['key' => 'purpose_copy', 'label' => 'Purpose copy', 'type' => 'textarea', 'rows' => 3],
                 ['key' => 'stats', 'label' => 'Experience statistics', 'type' => 'repeater', 'add' => 'Add statistic', 'help' => 'Never invent statistics — add a 4th only if verified.',
                     'fields' => [['key' => 'value', 'label' => 'Number', 'type' => 'text'], ['key' => 'suffix', 'label' => 'Suffix', 'type' => 'text'], ['key' => 'label', 'label' => 'Label', 'type' => 'text']]],
                 ['key' => 'featured_services', 'label' => 'Featured treatments (explorer)', 'type' => 'relation', 'source' => 'services'],
@@ -291,6 +299,7 @@ final class Resources
                 ['key' => 'cta_copy', 'label' => 'Appointment CTA copy', 'type' => 'textarea', 'rows' => 2],
                 ['key' => 'cta_small_print', 'label' => 'Appointment small print', 'type' => 'textarea', 'rows' => 2],
             ]],
+            'images' => ['label' => 'Site Images', 'icon' => 'image', 'fields' => self::imageSlotFields()],
             'integrations' => ['label' => 'Forms & Integrations', 'icon' => 'zap', 'fields' => [
                 ['key' => 'ghl_appointment_embed', 'label' => 'GoHighLevel appointment form embed', 'type' => 'code', 'help' => 'Paste the LeadConnector/GHL embed code. When set it replaces the built-in appointment form.'],
                 ['key' => 'ghl_contact_embed', 'label' => 'GoHighLevel contact form embed', 'type' => 'code'],
@@ -307,6 +316,9 @@ final class Resources
                 ['key' => 'form_accident_en', 'label' => 'Accident Forms — English', 'type' => 'file'],
                 ['key' => 'form_accident_es', 'label' => 'Accident Forms — Spanish', 'type' => 'file'],
             ]],
+            'videos' => ['label' => 'Videos', 'icon' => 'video', 'fields' => [
+                ['key' => 'youtube_videos', 'label' => 'YouTube videos', 'type' => 'lines', 'help' => 'One YouTube link per line. Optionally add a title after a | character, e.g. https://youtu.be/abc123 | What to expect.'],
+            ]],
             'social' => ['label' => 'Social', 'icon' => 'globe', 'fields' => [
                 ['key' => 'social_facebook', 'label' => 'Facebook URL', 'type' => 'text'],
                 ['key' => 'social_x', 'label' => 'X / Twitter URL', 'type' => 'text'],
@@ -319,6 +331,16 @@ final class Resources
                 ['key' => 'seo_og_image', 'label' => 'Default social share image', 'type' => 'image'],
             ]],
         ];
+    }
+
+    /** Settings → Site Images: one image field per slot in SiteImages::SLOTS. */
+    private static function imageSlotFields(): array
+    {
+        $out = [];
+        foreach (SiteImages::SLOTS as $key => $slot) {
+            $out[] = ['key' => $key, 'label' => $slot['label'], 'type' => 'image', 'help' => $slot['where'] . ' Auto-assign file name: ' . $slot['file'] . '.'];
+        }
+        return $out;
     }
 
     /** Clean a submitted value according to its field definition. */

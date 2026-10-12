@@ -10,7 +10,7 @@ $submitLabel = $submitLabel ?? ['appointment' => 'Request Appointment', 'benefit
 if ($embed !== ''): ?>
 <div class="form-embed"><?= $embed /* trusted embed from admin settings */ ?></div>
 <?php return; endif; ?>
-<form class="form" method="post" action="<?= e(url('api/form')) ?>" data-form novalidate>
+<form class="form" id="form" method="post" action="<?= e(url('api/form')) ?>" data-form novalidate>
   <input type="hidden" name="_form" value="<?= e($type) ?>">
   <input type="hidden" name="_token" value="<?= e(Forms::token()) ?>">
   <input type="hidden" name="_page" value="<?= e(strtok($_SERVER['REQUEST_URI'] ?? '/', '?')) ?>">
@@ -42,8 +42,8 @@ if ($embed !== ''): ?>
     </div>
   </div>
   <div class="form__actions">
-    <button class="btn btn--accent btn--lg" type="submit"><span><?= e($submitLabel) ?></span><?= icon('arrow-right') ?></button>
-    <p class="form__note"><?= icon('shield-check') ?>Prefer to talk? Call or text <a href="<?= e(tel_href(setting('phone'))) ?>"><?= e(setting('phone')) ?></a></p>
+    <button class="btn" type="submit"><span><?= e($submitLabel) ?></span><span class="btn__ic"><?= icon('arrow-right') ?></span></button>
+    <?php if (setting('phone')): ?><p class="form__note"><?= icon('shield-check') ?>Prefer to talk? Call or text <a href="<?= e(tel_href(setting('phone'))) ?>"><?= e(setting('phone')) ?></a></p><?php endif; ?>
   </div>
   <div class="form__status" role="status" aria-live="polite"></div>
 </form>

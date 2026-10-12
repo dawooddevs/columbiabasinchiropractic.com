@@ -105,6 +105,10 @@ if (!$segments) {
     $view = 'pages/home';
 } elseif ($segments[0] === Content::SERVICE_BASE && count($segments) === 2) {
     if ($s = Content::service($segments[1])) {
+        if (Content::isCondition($s)) {
+            // Conditions live at /<slug>/ (the old WordPress URLs)
+            redirect(Content::serviceUrl($s) . ($query !== '' ? '?' . $query : ''), 301);
+        }
         $view = 'pages/service';
         $vars['service'] = $s;
     }
@@ -115,9 +119,12 @@ if (!$segments) {
     }
 } elseif (count($segments) === 1 && preg_match('/^[a-z0-9\-]+$/', $segments[0])) {
     if ($page = Content::page($segments[0])) {
-        $templates = ['treatments', 'appointment', 'contact', 'sitemap', 'legal'];
+        $templates = ['treatments', 'appointment', 'contact', 'sitemap', 'legal', 'conditions', 'about', 'faq', 'videos', 'testimonials'];
         $view = 'pages/' . (in_array($page['template'], $templates, true) ? $page['template'] : 'page');
         $vars['page'] = $page;
+    } elseif (($s = Content::service($segments[0])) && Content::isCondition($s)) {
+        $view = 'pages/service';
+        $vars['service'] = $s;
     }
 }
 
@@ -131,6 +138,9 @@ if (!$view && isset($_GET['preview']) && $segments) {
         } elseif ($segments[0] === Content::PROVIDER_BASE && isset($segments[1]) && ($p = DB::one('SELECT * FROM providers WHERE slug = ?', [$segments[1]]))) {
             $view = 'pages/provider';
             $vars['provider'] = $p;
+        } elseif (count($segments) === 1 && ($s = DB::one('SELECT * FROM services WHERE slug = ? AND category = ?', [$segments[0], Content::CONDITION_CATEGORY]))) {
+            $view = 'pages/service';
+            $vars['service'] = $s;
         } elseif ($page = DB::one('SELECT * FROM pages WHERE slug = ?', [$segments[0]])) {
             $view = 'pages/page';
             $vars['page'] = $page;

@@ -9,21 +9,27 @@ final class Content
      * /PROVIDER_BASE/<slug>/. Change these to match the existing site's URLs (then add
      * redirects for any old URLs in Dashboard → Redirects).
      */
-    public const SERVICE_BASE = 'services';
-    public const PROVIDER_BASE = 'team';
+    public const SERVICE_BASE = 'service';
+    public const PROVIDER_BASE = 'doctor';
+
+    /**
+     * Conditions are stored as treatments in this category and keep the old WordPress URLs:
+     * /<slug>/ instead of /SERVICE_BASE/<slug>/ (see index.php and serviceUrl()).
+     */
+    public const CONDITION_CATEGORY = 'conditions';
 
     /** Service categories (dashboard dropdown, menus, filters). Edit to match the practice's services. */
     public const CATEGORIES = [
-        'chiropractic' => ['label' => 'Chiropractic Care', 'short' => 'Chiropractic', 'icon' => 'spine', 'blurb' => 'Adjustments and hands-on care for the spine and joints.'],
-        'therapy' => ['label' => 'Therapy & Rehab', 'short' => 'Therapy', 'icon' => 'activity', 'blurb' => 'Soft tissue therapy, exercise and rehabilitation.'],
-        'injury' => ['label' => 'Injury Care', 'short' => 'Injury', 'icon' => 'car', 'blurb' => 'Care after auto, work and sports injuries.'],
-        'wellness' => ['label' => 'Wellness', 'short' => 'Wellness', 'icon' => 'heart-pulse', 'blurb' => 'Ongoing care to help you stay well.'],
+        'chiropractic' => ['label' => 'Core Care', 'short' => 'Core Care', 'icon' => 'spine', 'blurb' => 'Chiropractic care, spinal decompression and recovery after injury.'],
+        'specialized' => ['label' => 'Specialized Care', 'short' => 'Specialized', 'icon' => 'sparkles', 'blurb' => 'Care for pregnancy, athletes and whole-person wellness.'],
+        'conditions' => ['label' => 'Conditions', 'short' => 'Condition', 'icon' => 'target', 'blurb' => 'Common concerns we evaluate and care for.'],
     ];
 
     /** FAQ groups: where a FAQ is shown. Templates read one group with Content::faqs('<key>'). */
     public const FAQ_GROUPS = [
         'home' => 'Homepage',
         'general' => 'FAQ page / general',
+        'myths' => 'FAQ page / common myths',
         'new-patients' => 'New patients',
         'billing' => 'Billing & insurance',
     ];
@@ -36,9 +42,10 @@ final class Content
         'other' => 'Clinical Team',
     ];
 
+    /** "Where does it hurt?" regions, drawn on the homepage spine explorer (top to bottom). */
     public const BODY_AREAS = [
-        'neck' => 'Neck', 'shoulder' => 'Shoulder', 'back' => 'Back', 'hip' => 'Hip', 'knee' => 'Knee',
-        'elbow' => 'Elbow', 'wrist-hand' => 'Wrist / Hand', 'leg' => 'Leg', 'ankle-foot' => 'Ankle / Foot', 'joint' => 'General Joint Pain',
+        'head' => 'Head', 'neck' => 'Neck', 'shoulder' => 'Shoulders', 'upper-back' => 'Upper Back',
+        'lower-back' => 'Lower Back', 'hip-leg' => 'Hips & Legs', 'whole-body' => 'Whole Body',
     ];
 
     private static array $cache = [];
@@ -130,7 +137,30 @@ final class Content
 
     public static function serviceUrl(array $s): string
     {
-        return url(self::SERVICE_BASE . '/' . $s['slug'] . '/');
+        return url(self::servicePath($s));
+    }
+
+    /** Site-relative path without the leading slash: conditions live at the root, services under SERVICE_BASE. */
+    public static function servicePath(array $s): string
+    {
+        return self::isCondition($s) ? $s['slug'] . '/' : self::SERVICE_BASE . '/' . $s['slug'] . '/';
+    }
+
+    public static function isCondition(array $s): bool
+    {
+        return ($s['category'] ?? '') === self::CONDITION_CATEGORY;
+    }
+
+    /** Published services, without conditions. */
+    public static function treatmentsOnly(): array
+    {
+        return array_values(array_filter(self::services(), fn($s) => !self::isCondition($s)));
+    }
+
+    /** Published conditions. */
+    public static function conditions(): array
+    {
+        return array_values(array_filter(self::services(), fn($s) => self::isCondition($s)));
     }
 
     public static function providerUrl(array $p): string

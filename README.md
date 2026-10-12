@@ -11,7 +11,7 @@ The backend for **columbiabasinchiropractic.com**, with staging at **new.columbi
 
 It is plain PHP 8 + MySQL (SQLite for local development), with no framework and no build step on the server.
 
-The public templates in `app/views/` and `assets/` are a deliberately plain **scaffold**: they render every content type so the site works end to end. Replace them with the real design. **`BACKEND.md` is the full guide.**
+The public design lives in `app/views/` and `assets/` ("Living Spine" design system: Fraunces + Plus Jakarta Sans, self-hosted). **`SITE-GUIDE.md`** covers images, migrated content and redirects; **`BACKEND.md`** is the full backend guide.
 
 ## Local development
 
