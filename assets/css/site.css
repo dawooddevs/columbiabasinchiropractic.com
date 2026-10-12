@@ -878,3 +878,6 @@ a.ccard:hover { transform: translateY(-4px); box-shadow: var(--shadow-sm); }
 .block { padding-bottom: calc(clamp(22px, 2.6vw, 34px) + 30px); margin-bottom: calc(clamp(22px, 2.6vw, 34px) + 30px); }
 .block:last-child { padding-bottom: 0; margin-bottom: 0; }
 .detail + .section, .detail + .section--tight { padding-top: calc(clamp(28px, 3.4vw, 48px) + 30px); }
+/* No numbers on service tiles: icon sits top-right on its own */
+.svc__top { justify-content: flex-end; }
+.prose .card::before { content: none; display: none; }

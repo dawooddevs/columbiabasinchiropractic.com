@@ -33,10 +33,10 @@ partial('page-head', ['title' => $page['title'], 'intro' => $page['intro'], 'eye
       <?php foreach ($cats as $k => $items): ?><a href="<?= e(url($page['slug'] . '/?category=' . $k)) ?>"<?= $active === $k ? ' aria-current="true"' : '' ?>><?= e(Content::categoryLabel($k)) ?></a><?php endforeach; ?>
     </nav>
     <?php endif; ?>
-    <?php $n = 0; foreach ($cats as $cat => $items): if ($active && $active !== $cat) continue; ?>
+    <?php foreach ($cats as $cat => $items): if ($active && $active !== $cat) continue; ?>
     <div class="cat-block">
       <div class="cat-block__head" data-reveal><h2><?= e(Content::categoryLabel($cat)) ?></h2><p><?= e(Content::CATEGORIES[$cat]['blurb'] ?? '') ?></p></div>
-      <div class="grid"><?php foreach ($items as $s) partial('service-card', ['s' => $s, 'n' => ++$n]); ?></div>
+      <div class="grid"><?php foreach ($items as $s) partial('service-card', ['s' => $s]); ?></div>
     </div>
     <?php endforeach; ?>
     <?php if (!$cats): ?><p>No services have been published yet.</p><?php endif; ?>

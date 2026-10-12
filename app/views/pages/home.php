@@ -108,7 +108,7 @@ $stats = json_list(setting('stats'));
       <?= section_head('Our services', 'Focused care for pain, recovery, and *better function.*', 'Explore care options designed to help you recover from injuries, manage discomfort, and stay active.', ['num' => '02', 'class' => 'mt-0']) ?>
       <a class="btn btn--ink" href="<?= e(url('services/')) ?>" data-reveal><span>All services</span><span class="btn__ic"><?= icon('arrow-right') ?></span></a>
     </div>
-    <div class="bento"><?php foreach ($featured as $i => $s) partial('service-card', ['s' => $s, 'n' => $i + 1]); ?></div>
+    <div class="bento"><?php foreach ($featured as $s) partial('service-card', ['s' => $s]); ?></div>
   </div>
 </section>
 <?php endif; ?>

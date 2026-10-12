@@ -166,7 +166,7 @@ partial('page-head', [
       <?= section_head('Related care', 'Additional care that may *support your recovery.*', '', ['class' => 'mt-0']) ?>
       <a class="btn btn--ghost" href="<?= e(url($isCond ? 'conditions/' : 'services/')) ?>" data-reveal><span>View all</span><span class="btn__ic"><?= icon('arrow-right') ?></span></a>
     </div>
-    <div class="grid"><?php foreach ($related as $i => $r) partial('service-card', ['s' => $r, 'n' => $i + 1]); ?></div>
+    <div class="grid"><?php foreach ($related as $r) partial('service-card', ['s' => $r]); ?></div>
   </div>
 </section>
 <?php endif; ?>
