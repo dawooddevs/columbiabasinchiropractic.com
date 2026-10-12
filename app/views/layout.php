@@ -29,7 +29,7 @@ $css = is_file(ROOT . '/assets/css/site.min.css') ? 'css/site.min.css' : 'css/si
   <?php endif; ?>
   <?= setting('head_scripts') /* KEEP: trusted, admin-only setting */ ?>
 </head>
-<body data-base="<?= e(url('')) ?>">
+<body data-base="<?= e(url('')) ?>"<?= rtrim($path ?? '', '/') === '' ? ' class="is-home"' : '' ?>>
   <a class="skip-link" href="#main">Skip to content</a>
   <?php partial('header', ['path' => $path]); ?>
   <main id="main" tabindex="-1"><?= $content ?></main>

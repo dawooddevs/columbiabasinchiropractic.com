@@ -887,3 +887,16 @@ a.ccard:hover { transform: translateY(-4px); box-shadow: var(--shadow-sm); }
 .reviews-split > .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
 @media (max-width: 1024px) { .reviews-split > .ph { margin: 0; aspect-ratio: 16 / 9; } }
 @media (max-width: 720px) { .reviews-split > .ph { aspect-ratio: 4 / 3; } }
+/* Same-background neighbours: don't stack two section paddings (e.g. FAQ → call-to-action) */
+.section:not(.section--alt):not(.dark) + .section:not(.section--alt):not(.dark),
+.section--alt + .section--alt,
+.section:not(.section--alt):not(.dark) + .cta,
+.marquee + .section:not(.section--alt):not(.dark) { padding-top: 0; }
+.marquee + .section { padding-top: calc(var(--section) * .75); }
+/* Homepage: a little tighter overall */
+.is-home .section { padding-top: clamp(40px, calc(8vw - 30px), 84px); padding-bottom: clamp(40px, calc(8vw - 30px), 84px); }
+.is-home .section--tight { padding-top: clamp(28px, 4vw, 52px); padding-bottom: clamp(28px, 4vw, 52px); }
+.is-home .section:not(.section--alt):not(.dark) + .section:not(.section--alt):not(.dark),
+.is-home .section--alt + .section--alt { padding-top: 0; }
+.is-home .cta { padding-top: clamp(40px, calc(8vw - 30px), 84px); padding-bottom: clamp(40px, calc(8vw - 30px), 84px); }
+.is-home .section:not(.section--alt):not(.dark) + .cta { padding-top: 0; }
