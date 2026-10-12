@@ -36,6 +36,16 @@ jobs:
       SSH_DIR: ${{ secrets.SSH_DIR || 'www/new.columbiabasinchiropractic.com/public_html/' }}
       SSH_PORT: '18765'
     steps:
+      # Staging only: never write into the live site folder (www/columbiabasinchiropractic.com/)
+      # or any other site on the account. Change this check deliberately at launch (BACKEND.md §9.4).
+      - name: Guard target folder
+        run: |
+          echo "Target folder: $SSH_DIR"
+          case "$SSH_DIR" in
+            www/new.columbiabasinchiropractic.com/public_html|www/new.columbiabasinchiropractic.com/public_html/) ;;
+            *) echo "::error::Refusing to deploy to '$SSH_DIR'. Staging must be www/new.columbiabasinchiropractic.com/public_html/"; exit 1 ;;
+          esac
+
       - uses: actions/checkout@v4
 
       - uses: shivammathur/setup-php@v2
