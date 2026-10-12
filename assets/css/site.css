@@ -832,3 +832,18 @@ a.ccard:hover { transform: translateY(-4px); box-shadow: var(--shadow-sm); }
 .drop a.mega__feat { align-items: flex-start; justify-content: flex-end; gap: 0; padding: 22px; color: #fff; }
 .drop a.mega__feat:hover { background: var(--deep); }
 .drop a.mega__feat strong { color: #fff; }
+/* Uploaded logo / icon */
+.mark--img { object-fit: contain; border-radius: 12px; }
+.spin-badge .mark--img { width: 52px; height: 52px; border-radius: 50%; background: #fff; padding: 4px; }
+.ph__mark.mark--img { width: clamp(44px, 16%, 76px); height: auto; aspect-ratio: 1; opacity: .5; border-radius: 16px; filter: grayscale(.2); }
+.brand--chip { padding: 6px 12px; border-radius: 14px; background: #fff; }
+.site-footer .brand__img { height: 52px; max-width: 240px; }
+.mnav .brand__img { height: 40px; }
+/* Hero info strip: 3 tiles */
+.hero__strip { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 1024px) { .hero__strip { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 720px) { .hero__strip { grid-template-columns: 1fr; } }
+/* Tighter vertical rhythm: every section 30px less at the top and bottom */
+:root { --section: clamp(42px, calc(10vw - 30px), 106px); }
+.spin-badge .mark--wide { width: 84px; height: 84px; padding: 0 8px; border-radius: 50%; object-fit: contain; background: #fff; }
+.ph__mark.mark--wide { width: min(46%, 220px); aspect-ratio: auto; height: auto; max-height: 30%; padding: 10px 14px; background: rgba(255, 255, 255, .9); border-radius: 14px; opacity: .55; filter: none; }

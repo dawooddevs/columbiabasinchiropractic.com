@@ -13,14 +13,7 @@ $serviceCats = array_filter([
 ]);
 $doctors = array_values(array_filter(Content::providers(), 'is_clinician'));
 $feat = Content::service('spinal-decompression');
-$logo = setting('logo');
-$brand = function (string $extra = '') use ($logo) {
-    if ($logo) {
-        return '<a class="brand ' . $extra . '" href="' . e(url('')) . '" aria-label="' . e(setting('site_name')) . ' home">' . img($logo, setting('site_name'), ['class' => 'brand__img', 'loading' => 'eager']) . '</a>';
-    }
-    return '<a class="brand ' . $extra . '" href="' . e(url('')) . '" aria-label="' . e(setting('site_name')) . ' home">' . brand_mark('mark')
-        . '<span class="brand__text"><span class="brand__name">Columbia Basin</span><span class="brand__sub">Chiropractic Center</span></span></a>';
-};
+$brand = fn(bool $dark = false) => brand_link($dark);
 ?>
 <div class="topbar">
   <div class="container topbar__in">
@@ -119,7 +112,7 @@ $brand = function (string $extra = '') use ($logo) {
 
 <div class="mnav" id="mnav" role="dialog" aria-modal="true" aria-label="Menu" data-mnav hidden>
   <div class="mnav__top">
-    <?= $brand() ?>
+    <?= $brand(true) ?>
     <button class="icon-btn" type="button" aria-label="Close menu" data-mnav-close><?= icon('x') ?></button>
   </div>
   <ul class="mnav__list">

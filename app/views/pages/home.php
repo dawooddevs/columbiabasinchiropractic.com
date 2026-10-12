@@ -49,7 +49,7 @@ $stats = json_list(setting('stats'));
         <?= site_pic('hero_image_2', 'Our Richland clinic', ['class' => 'hero__inset']) ?>
         <div class="spin-badge" aria-hidden="true">
           <svg class="ring" viewBox="0 0 132 132"><defs><path id="ring-path" d="M66 66 m-50 0 a50 50 0 1 1 100 0 a50 50 0 1 1 -100 0"/></defs><text><textPath href="#ring-path">Personalized care · Richland, WA · </textPath></text></svg>
-          <?= brand_mark('mark') ?>
+          <?= brand_icon('mark', true) ?>
         </div>
         <?php if ($loc): ?>
         <div class="hero__card glass">
@@ -61,12 +61,11 @@ $stats = json_list(setting('stats'));
       </div>
     </div>
     <div class="hero__strip">
-      <div class="hero__tile glass" data-reveal><span class="ti"><?= icon('smile') ?></span><span><b>Fast, friendly &amp; affordable</b><span>Personal attention from a team that cares.</span></span></div>
       <?php if ($loc): ?>
-      <a class="hero__tile glass" href="<?= e(Content::mapsDirections($loc)) ?>" target="_blank" rel="noopener" data-reveal style="--d:.06s"><span class="ti"><?= icon('map-pin') ?></span><span><b>Richland clinic</b><span><?= e($loc['address']) ?></span></span></a>
-      <div class="hero__tile glass" data-reveal style="--d:.12s"><span class="ti"><?= icon('clock') ?></span><span><b>Office hours</b><span><?= e(hours_short($loc)) ?></span></span></div>
+      <a class="hero__tile glass" href="<?= e(Content::mapsDirections($loc)) ?>" target="_blank" rel="noopener" data-reveal ><span class="ti"><?= icon('map-pin') ?></span><span><b>Richland clinic</b><span><?= e($loc['address']) ?></span></span></a>
+      <div class="hero__tile glass" data-reveal style="--d:.06s"><span class="ti"><?= icon('clock') ?></span><span><b>Office hours</b><span><?= e(hours_short($loc)) ?></span></span></div>
       <?php endif; ?>
-      <?php if ($phone): ?><a class="hero__tile glass" href="<?= e(tel_href($phone)) ?>" data-reveal style="--d:.18s"><span class="ti"><?= icon('phone') ?></span><span><b>Call or text</b><span><?= e($phone) ?></span></span></a><?php endif; ?>
+      <?php if ($phone): ?><a class="hero__tile glass" href="<?= e(tel_href($phone)) ?>" data-reveal style="--d:.12s"><span class="ti"><?= icon('phone') ?></span><span><b>Call or text</b><span><?= e($phone) ?></span></span></a><?php endif; ?>
     </div>
   </div>
 </section>

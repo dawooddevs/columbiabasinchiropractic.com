@@ -19,7 +19,7 @@ function pic(?string $path, string $alt, array $o = []): string
         if (!empty($o['pos'])) $a['style'] = 'object-position:' . $o['pos'];
         return '<figure class="' . e($cls) . ' ph--filled"' . $attr . '>' . img($path, $alt, $a) . '</figure>';
     }
-    return '<figure class="' . e($cls) . ' ph--empty"' . $attr . '><span class="ph__art" aria-hidden="true">' . brand_mark('ph__mark') . '</span></figure>';
+    return '<figure class="' . e($cls) . ' ph--empty"' . $attr . '><span class="ph__art" aria-hidden="true">' . brand_icon('ph__mark', true) . '</span></figure>';
 }
 
 /** Image slot for a Settings → Site Images key. */
@@ -60,6 +60,66 @@ function brand_mark(string $class = 'mark'): string
     $id = 'bm-g' . (++$n);
     return '<svg class="' . e($class) . '" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><defs><linearGradient id="' . $id . '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1fb57a"/><stop offset="1" stop-color="#0b3b2a"/></linearGradient></defs>'
         . '<rect width="48" height="48" rx="15" fill="url(#' . $id . ')"/><g fill="#fff"><rect x="16" y="8" width="16" height="6" rx="3" opacity=".95"/><rect x="14" y="16.5" width="20" height="6" rx="3"/><rect x="15" y="25" width="18" height="6" rx="3" opacity=".9"/><rect x="18" y="33.5" width="12" height="6" rx="3" opacity=".8"/></g><circle cx="38" cy="10" r="3" fill="#f6c453"/></svg>';
+}
+
+/** True when an uploaded image is close to square (usable as an icon). */
+function is_squarish(string $path): bool
+{
+    $m = $path !== '' ? Media::lookup($path) : null;
+    if (!$m || !$m['width'] || !$m['height']) return false;
+    $r = $m['width'] / $m['height'];
+    return $r > 0.7 && $r < 1.45;
+}
+
+/**
+ * The practice's square icon: Settings → Branding → Favicon, else the logo when it is roughly square.
+ * '' when neither is set (the built-in mark is used).
+ */
+function brand_icon_path(): string
+{
+    static $p = null;
+    if ($p !== null) return $p;
+    foreach (['favicon', 'logo', 'logo_light'] as $k) {
+        $v = (string)setting($k, '');
+        if ($v !== '' && !Media::isMissing($v) && ($k === 'favicon' || is_squarish($v))) return $p = $v;
+    }
+    return $p = '';
+}
+
+/**
+ * Brand icon: the uploaded square icon, else (when $allowWide) the full logo fitted inside the
+ * shape, else the built-in vertebrae mark.
+ */
+function brand_icon(string $class = 'mark', bool $allowWide = false): string
+{
+    $p = brand_icon_path();
+    if ($p !== '') return img($p, '', ['class' => $class . ' mark--img', 'loading' => 'lazy']);
+    $logo = (string)setting('logo', '');
+    if ($allowWide && $logo !== '' && !Media::isMissing($logo)) {
+        return img($logo, '', ['class' => $class . ' mark--img mark--wide', 'loading' => 'lazy']);
+    }
+    return brand_mark($class);
+}
+
+/**
+ * Brand link (logo or wordmark) for the header ($dark = false) or dark surfaces ($dark = true:
+ * footer, mobile menu). On dark surfaces the light logo is used; without one, the regular logo sits
+ * on a light chip so it stays legible.
+ */
+function brand_link(bool $dark = false, string $extra = ''): string
+{
+    $logo = (string)setting('logo', '');
+    $light = (string)setting('logo_light', '');
+    $use = $dark ? ($light ?: $logo) : $logo;
+    if ($use !== '' && Media::isMissing($use)) $use = '';
+    $label = ' aria-label="' . e(setting('site_name')) . ' home"';
+    $cls = 'brand' . ($extra !== '' ? ' ' . $extra : '');
+    if ($use !== '') {
+        $chip = $dark && $light === '' ? ' brand--chip' : '';
+        return '<a class="' . $cls . $chip . '" href="' . e(url('')) . '"' . $label . '>' . img($use, setting('site_name'), ['class' => 'brand__img', 'loading' => 'eager']) . '</a>';
+    }
+    return '<a class="' . $cls . '" href="' . e(url('')) . '"' . $label . '>' . brand_icon('mark')
+        . '<span class="brand__text"><span class="brand__name">Columbia Basin</span><span class="brand__sub">Chiropractic Center</span></span></a>';
 }
 
 /** Section heading block. */

@@ -5,16 +5,13 @@ $email = setting('email');
 $loc = main_location();
 $social = array_filter(['facebook' => setting('social_facebook'), 'instagram' => setting('social_instagram'), 'x-social' => setting('social_x')]);
 $popular = Content::servicesBySlugs(csv_list(setting('featured_services'))) ?: Content::treatmentsOnly();
-$logoLight = setting('logo_light');
 ?>
 <footer class="site-footer dark">
   <div class="aurora"></div><div class="grain"></div>
   <div class="container">
     <div class="footer__grid">
       <div>
-        <a class="brand" href="<?= e(url('')) ?>" aria-label="<?= e(setting('site_name')) ?> home">
-          <?php if ($logoLight): ?><?= img($logoLight, setting('site_name'), ['class' => 'brand__img']) ?><?php else: ?><?= brand_mark('mark') ?><span class="brand__text"><span class="brand__name">Columbia Basin</span><span class="brand__sub">Chiropractic Center</span></span><?php endif; ?>
-        </a>
+        <?= brand_link(true) ?>
         <?php if (setting('brand_description')): ?><p><?= e(setting('brand_description')) ?></p><?php endif; ?>
         <?php if ($phone): ?><a class="footer__big" href="<?= e(tel_href($phone)) ?>"><?= e($phone) ?></a><?php endif; ?>
         <?php if ($email): ?><a href="mailto:<?= e($email) ?>"><?= e($email) ?></a><?php endif; ?>

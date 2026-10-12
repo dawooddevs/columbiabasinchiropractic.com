@@ -22,7 +22,7 @@ $css = is_file(ROOT . '/assets/css/site.min.css') ? 'css/site.min.css' : 'css/si
   <link rel="preload" href="<?= e(url('assets/fonts/plus-jakarta-sans-latin-wght-normal.woff2')) ?>" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="<?= e(asset($css)) ?>">
   <style>:root{--primary:<?= $primary ?>;--accent:<?= $accent ?>;--highlight:<?= $highlight ?>}</style>
-  <?php if (setting('favicon')): ?><link rel="icon" href="<?= e(media_url(setting('favicon'))) ?>"><?php else: ?><link rel="icon" href="<?= e(url('assets/img/favicon.svg')) ?>" type="image/svg+xml"><?php endif; ?>
+  <?php if ($icon = brand_icon_path()): ?><link rel="icon" href="<?= e(media_url($icon)) ?>"><link rel="apple-touch-icon" href="<?= e(media_url($icon)) ?>"><?php else: ?><link rel="icon" href="<?= e(url('assets/img/favicon.svg')) ?>" type="image/svg+xml"><?php endif; ?>
   <?php if ($gaId): ?>
   <script async src="https://www.googletagmanager.com/gtag/js?id=<?= e($gaId) ?>"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','<?= e($gaId) ?>');</script>
