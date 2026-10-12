@@ -881,3 +881,9 @@ a.ccard:hover { transform: translateY(-4px); box-shadow: var(--shadow-sm); }
 /* No numbers on service tiles: icon sits top-right on its own */
 .svc__top { justify-content: flex-end; }
 .prose .card::before { content: none; display: none; }
+/* Reviews photo: height follows the review cards; the image covers that box */
+.reviews-split { align-items: stretch; }
+.reviews-split > .ph { min-height: 0; height: auto; margin: 4px 0 24px; }
+.reviews-split > .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+@media (max-width: 1024px) { .reviews-split > .ph { margin: 0; aspect-ratio: 16 / 9; } }
+@media (max-width: 720px) { .reviews-split > .ph { aspect-ratio: 4 / 3; } }
