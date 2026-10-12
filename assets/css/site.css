@@ -890,9 +890,7 @@ a.ccard:hover { transform: translateY(-4px); box-shadow: var(--shadow-sm); }
 /* Same-background neighbours: don't stack two section paddings (e.g. FAQ → call-to-action) */
 .section:not(.section--alt):not(.dark) + .section:not(.section--alt):not(.dark),
 .section--alt + .section--alt,
-.section:not(.section--alt):not(.dark) + .cta,
-.marquee + .section:not(.section--alt):not(.dark) { padding-top: 0; }
-.marquee + .section { padding-top: calc(var(--section) * .75); }
+.section:not(.section--alt):not(.dark) + .cta { padding-top: 0; }
 /* Homepage: a little tighter overall */
 .is-home .section { padding-top: clamp(40px, calc(8vw - 30px), 84px); padding-bottom: clamp(40px, calc(8vw - 30px), 84px); }
 .is-home .section--tight { padding-top: clamp(28px, 4vw, 52px); padding-bottom: clamp(28px, 4vw, 52px); }
@@ -900,3 +898,12 @@ a.ccard:hover { transform: translateY(-4px); box-shadow: var(--shadow-sm); }
 .is-home .section--alt + .section--alt { padding-top: 0; }
 .is-home .cta { padding-top: clamp(40px, calc(8vw - 30px), 84px); padding-bottom: clamp(40px, calc(8vw - 30px), 84px); }
 .is-home .section:not(.section--alt):not(.dark) + .cta { padding-top: 0; }
+/* Same-background follow-on sections keep a modest top space (call-to-action excepted) */
+.section:not(.section--alt):not(.dark) + .section:not(.section--alt):not(.dark),
+.section--alt + .section--alt,
+.is-home .section:not(.section--alt):not(.dark) + .section:not(.section--alt):not(.dark),
+.is-home .section--alt + .section--alt { padding-top: clamp(24px, 3vw, 40px); }
+.is-home .section--tight + .section { padding-top: clamp(32px, 4vw, 56px); }
+/* Bento: responsive spans must win over the desktop pattern above */
+@media (max-width: 1024px) { .bento > :nth-child(n) { grid-column: span 6; } }
+@media (max-width: 720px) { .bento > :nth-child(n) { grid-column: span 12; } .is-home .cta { padding-bottom: 48px; } .is-home .section:not(.section--alt):not(.dark) + .cta { padding-top: 8px; } }
